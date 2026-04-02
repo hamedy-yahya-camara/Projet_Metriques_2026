@@ -36,5 +36,23 @@ def monhistogramme():
 
 # Ne rien mettre après ce commentaire
 
+@app.get("/nice")
+def api_nice():
+    url = "https://api.open-meteo.com/v1/forecast?latitude=43.7102&longitude=7.2620&hourly=shortwave_radiation"
+    response = requests.get(url)
+    data = response.json()
+    times = data.get("hourly", {}).get("time", [])
+    radiation = data.get("hourly", {}).get("shortwave_radiation", [])
+    n = min(len(times), len(radiation))
+    result = [
+        {"datetime": times[i], "radiation_wm2": radiation[i]}
+        for i in range(n)
+    ]
+    return jsonify(result)
+
+@app.route("/atelier")
+def monatelier():
+    return render_template("atelier.html")
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
